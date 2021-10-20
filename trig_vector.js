@@ -1,8 +1,157 @@
-var deg = 180 / Math.PI;
-var rad = Math.PI / 180.0;
-var centre = new Point(0, 0);
-var netForce = new Vector(0,0);
-var forceVector = new Vector(0,0);
+var degConvertor = 180 / Math.PI, rad = Math.PI / 180.0;
+var repulsion_constant = 100 ;
+var attraction_constant = 1;
+var perif_attr = 100;
+var springLength = 175  ;
+
+ 
+// recalculate the forces on a node and so its position
+function reposition()
+{
+	let repelForce;
+	for(let a=0; a < nodeCount; a++)
+		nodes[a].velocity.reset();
+
+	for(let a=0; a < nodeCount; a++)
+	{
+		for(b=a+1; b < nodeCount; b++) 
+		{
+			repelForce = replusionForce (nodes[a], nodes[b]);
+			nodes[a].velocity = addVectors(nodes[a].velocity, repelForce, "minus");
+			nodes[b].velocity = addVectors(nodes[b].velocity, repelForce, "add");
+		}
+
+		 if(a>0)  
+		 {
+			 
+			repelForce = replusionForce (nodes[a], nodes[0] );
+			nodes[a].velocity = addVectors(nodes[a].velocity, repelForce, "add");
+			nodes[a].velocity = addVectors(nodes[a].velocity, attractionForce (nodes[a], nodes[nodes[a].parentNode], nodes[a].mylinks.length), "minus");	 
+		
+		 
+		
+		}
+	 
+	}
+	for(let a=0; a < nodeCount; a++)  
+		nodes[a].newPosition(ToPoint(nodes[a].velocity));
+	  
+ 
+}
+
+function replusionForce(a, b)
+{
+	let d =  distance (a.location, b.location) ;
+	if(d < 1) d = 1; 
+
+	let force = repulsion_constant / Math.pow(d, 2) /d;
+	let myangle = angle (a.location, b.location);
+
+	return new Vector(force, myangle);
+}
+
+function attractionForce(a, b, n)
+{
+	let d = Math.max(1, distance (a.location, b.location));
+	let extra =1, force;
+	if(n==0)
+		extra = perif_attr;
+	if(n==0)
+		  force = -attraction_constant * extra * Math.max(0, d - (springLength /4) ) /d;
+	else
+		 	 force = -attraction_constant * extra * Math.max(0, d -  springLength  ) /d;	
+	let myangle = angle (a.location, b.location);
+	
+	return new Vector(force, myangle);
+}
+
+
+function ToPoint(vector) 
+{
+	let mag = vector.magnitude;
+	let direct = vector.direction;
+	let aX = mag * Math.cos(rad * direct);
+	let aY = mag * Math.sin(rad * direct);
+
+	return new Point(aX, aY);
+}
+
+function addVectors(a, b, sign)
+{ 
+	// obvious improvement - add only magnitudes and then do the direction at end 
+	let direction;
+
+	let aX = a.magnitude * Math.cos(rad * a.direction);
+	let aY = a.magnitude * Math.sin(rad * a.direction);
+
+	let bX = b.magnitude * Math.cos(rad * b.direction);
+	let bY = b.magnitude * Math.sin(rad * b.direction);
+
+	if(sign=="add")
+	{
+		aX += bX;
+		aY += bY;
+	}
+	else
+	{
+		aX -= bX;
+		aY -= bY;
+	} 
+
+	  let magnitude = Math.sqrt(Math.pow(aX, 2) + Math.pow(aY, 2));
+ 
+	 
+	if (magnitude == 0)
+		return new Vector(0,0);
+
+	direction = degConvertor * Math.atan (aY/aX);
+
+	//direction = Number.parseFloat(direction).toFixed(2);
+ 
+
+	if(aX >= 0 && aY >= 0)
+		return new Vector(magnitude, direction);
+
+	if(aX < 0 && aY >= 0)
+		return new Vector(magnitude, 180.0 + direction);
+
+	if(aX < 0 && aY < 0)
+		return new Vector(magnitude, 180.0 + direction);
+
+	if(aX >= 0 && aY < 0)
+		return new Vector(magnitude, 360.0 + direction);
+}
+
+function angle(a, b)
+{
+	dx = b.x - a.x;
+	dy = b.y - a.y;
+
+	let angle = Math.atan(dy/dx) * degConvertor;
+
+	if(dx >= 0 && dy >= 0)
+		return angle;
+
+	if(dx < 0 &&  dy >= 0)
+		return  180 + angle;
+
+	if(dx < 0 && dy < 0)
+		return  180 + angle;
+
+	if(dx >= 0 && dy < 0)
+		return  360 + angle;
+}
+
+
+
+function gravityForce(a, b, amount)
+{
+	var d = Math.max(1, distance (a.location, b.location));
+	var force = amount * Math.max(0, d - springLength); // force reducer
+	var myangle = angle (a.location, b.location);
+	
+	return new Vector(force, myangle);
+}
 
 function turnOnGravity(gravityAmount)
 {
@@ -32,150 +181,6 @@ function turnOnGravity(gravityAmount)
 	}	
 }
 
-function reposition()
-{
-	let netRepelForce = netAttractForce = new Vector(0, 0); 
-	let newPoint;
-	
-	for(var a=0; a < nodeCount ; a++)
-	{
-		netRepelForce.reset();
-		netAttractForce.reset();
-		nodes[a].velocity.reset();
-	  
-		for(b=0; b < nodeCount; b++)    
-		{
-			if (a!= b)
-			{
-				forceVector = replusionForce (nodes[a], nodes[b]);
-				netRepelForce = addVectors(netRepelForce, forceVector);
-			}
-		} 
-
-		//sum attractions from only selected nodes, i.e. the edge-linked nodes. 
-		if(a>0)
-		{
-			forceVector = attractionForce (nodes[a],nodes[nodes[a].parentNode]);
-				
-			netAttractForce = addVectors(netAttractForce, forceVector);
-				
-			nodes[a].velocity = addVectors(netRepelForce, netAttractForce);
-		} 
-		else
-			nodes[a].velocity = netRepelForce;
- 
-		nodes[a].velocity = dampening(nodes[a].velocity, dampening_constant);
-		 
-
-		nodes[a].newPosition(ToPoint(nodes[a].velocity));
-	 
-	}
-}
-
-function ToPoint(vector) 
-{
-	var mag = vector.magnitude;
-	var direct = vector.direction;
-	var aX = mag * Math.cos(rad * direct);
-	var aY = mag * Math.sin(rad * direct);
-
-	return new Point(aX, aY);
-}
-
-function addVectors(a, b)
-{ 
-	// obvious improvement - add only magnitudes and then do the direction at end 
-	var direction;
-
-	var aX = a.magnitude * Math.cos(rad * a.direction);
-	var aY = a.magnitude * Math.sin(rad * a.direction);
-
-	var bX = b.magnitude * Math.cos(rad * b.direction);
-	var bY = b.magnitude * Math.sin(rad * b.direction);
-
-
-	aX += bX;
-	aY += bY;
-
-	var magnitude = Math.sqrt(Math.pow(aX, 2) + Math.pow(aY, 2));
-
-	if (magnitude == 0.0)
-	{
-		direction = 0.0;
-		return new Vector(0,0);
-	}
-
-	direction = deg * Math.atan (aY/aX);
-
-	if(aX >= 0 && aY >= 0)
-		return new Vector(magnitude, direction);
-
-	if(aX < 0 && aY >= 0)
-		return new Vector(magnitude, 180 + direction);
-
-	if(aX < 0 && aY < 0)
-		return new Vector(magnitude, 180 + direction);
-
-	if(aX >= 0 && aY < 0)
-		return new Vector(magnitude, 360 + direction);
-}
-
-function angle(a, b)
-{
-	dx = b.x - a.x;
-	dy = b.y - a.y;
-
-	var angle = Math.atan(dy/dx) * deg;
-
-	if(dx >= 0 && dy >= 0)
-		return angle;
-
-	if(dx < 0 &&  dy >= 0)
-		return  180 + angle;
-
-	if(dx < 0 && dy < 0)
-		return  180 + angle;
-
-	if(dx >= 0 && dy < 0)
-		return  360 + angle;
-}
-
-function replusionForce(a, b)
-{
-
-	let d =  distance (a.location, b.location) ;
-	if(d < 1)
-		d =1;
- 
-	var force = -(repulsion_constant / Math.pow(d, 2));
-	var myangle = angle (a.location, b.location);
-
-	return new Vector(force, myangle);
-}
-
-function attractionForce(a, b)
-{
-	var d = Math.max(1, distance (a.location, b.location));
-	//a.location.consolePosition("A");
-	//b.location.consolePosition("B");
-
-
-	var force = attraction_constant * Math.max(0, d- springLength );
-	//console.log("d:" + d + "force: " + force);
-	var myangle = angle (a.location, b.location);
-	
-	return new Vector(force, myangle);
-}
-
-function gravityForce(a, b, amount)
-{
-	var d = Math.max(1, distance (a.location, b.location));
-	var force = amount * Math.max(0, d - springLength); // force reducer
-	var myangle = angle (a.location, b.location);
-	
-	return new Vector(force, myangle);
-}
-
 function dampening(a, damp)
 {
 	return new Vector(a.magnitude * damp, a.direction);
@@ -183,8 +188,8 @@ function dampening(a, damp)
 
 function distance(a, b)
 {
-	var x = a.x - b.x;
-	var y = a.y - b.y;
+	let x = a.x - b.x;
+	let y = a.y - b.y;
 	return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 }
 

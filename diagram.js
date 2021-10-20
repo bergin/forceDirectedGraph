@@ -8,7 +8,7 @@ var screenCentreX = width / 2;
 var screenCentreY = height /2;
 var x2, y2;
 var dotSize = 10;
-var scaling =.5;
+var scaling =1;
 var firstNode =-1; 
 var moving = false, myNode, jointNode; 
 
@@ -150,19 +150,19 @@ function drawLine(ctx, x, y, x1, y1)
 
 function draw() 
 { 
-canvas = document.getElementById("canvas");
+	canvas = document.getElementById("canvas");
  
 	if (canvas.getContext) 
 	{
-		var ctx = canvas.getContext("2d");
+		let ctx = canvas.getContext("2d");
   		ctx.clearRect(0, 0, width, height);
 
-		for(var n=0; n < nodeCount; n++){
+		for(let n=0; n < nodeCount; n++){
 
 			sx = (nodes[n].location.x) * scaling + screenCentreX;
 			sy = (nodes[n].location.y) * scaling + screenCentreY;
 
-			for(var i=0; i< nodes[n].mylinks.length;i++) 
+			for(let i=0; i< nodes[n].mylinks.length;i++) 
 			{
 				x2 = nodes[nodes[n].mylinks[i]].location.x  * scaling + screenCentreX;
 				y2 = nodes[nodes[n].mylinks[i]].location.y  * scaling + screenCentreY;
@@ -171,7 +171,7 @@ canvas = document.getElementById("canvas");
 			}
 		}
 
-		for(var n=0; n < nodeCount; n++)
+		for(let n=0; n < nodeCount; n++)
 		{
 			sx = (nodes[n].location.x) * scaling + screenCentreX;
 			sy = (nodes[n].location.y) * scaling + screenCentreY;
@@ -187,172 +187,4 @@ function resetColors()
 }
 
 
-
-/*
-
-
-function findClickCoordsAnimate(evt)
-{
-	var csrx = evt.pageX;
-	var csry = evt.pageY;
-	
-	if(evt.keyCode == 'd'.charCodeAt(0))
-	{
-		var found = findNode(csrx, csry);
-		
-		if(found>-1)
-			deleteNode(found);
-		else
-			return
-	
-	}
-	
-	else if (evt.ctrlKey)
-	{			
-		var aNode = findNode(csrx, csry);
-
-		if(firstNode == -1 && aNode > -1)    		// i.e. has been found
-		{
-			nodes[aNode].color ="green";
-			 					
-			firstNode = aNode;
-			 
-			
-		}	
-		else if (firstNode > -1 && aNode > -1) 
-		{
-			nodes[aNode].color ="green";
-					 
-			connectNodes(firstNode, aNode);
-			firstNode = -1; 
-			iter = 0;		 		// restart the animation
-			loopAnimate();
-		
-		}
-		else	
-			return;					// node not found
-		 
-	}
-	
-	else if (evt.shiftKey)
-	{			 
-		if(!moving) 
-		{ 
-			myNode = findNode(csrx, csry);
-			if (myNode >-1)
-				moving = true;
-		}
-			
-		else
-		{  
-			 console.log(myNode);
-			let sx = csrx / scaling - screenCentreX;
-			let sy = csry / scaling - screenCentreY;
-			nodes[myNode].location.changeLocation(sx, sy);
-			nodes[myNode].location.consolePosition();
-		} 
-		  
-		 
-		 //create_new_node(therex, therey);
-	} 
-	else
-	{
-		let expandThisNode = findNode(csrx, csry);
-												//console.log(csrx + " " + csry + " " + expandThisNode);
-		if(expandThisNode > -1)
-		{
-			createChildNode(expandThisNode);
-			iter=0;
-			loopAnimate();
-		}
-	}	
-}
-
-*/
-
-
-
-
-
-
-/*
-function findClickCoordsAnimate(evt)
-{
-	var csrx = evt.pageX;
-	var csry = evt.pageY;
-	var expandThisNode;
-	connectThisNode = findNode(csrx, csry);
-	//alert(connectThisNode);
-	if (evt.ctrlKey)
-	{
-		//alert("ctrl");
-
-		if(connectThisNode > -1)		// have already got a ref
-		{				
-			var secondNode = findNode(csrx, csry);
-			
-			if(secondNode > -1)    		// i.e. has been found
-			{
-				connect(connectThisNode, secondNode);
-				nodes[secondNode].color ="green";
-				connectThisNode = -1;
-				secondNode = -1;
-				iter = 0;		// stop the animation
-				loopAnimate();
-				
-			}	
-			
-			else	
-				return;	
-		}
-
-		else
-		{					// not yet
  
-			connectThisNode = findNode(csrx, csry);
-			
-			if(connectThisNode > -1)
-			{
-				nodes[connectThisNode].color ="green";
-				draw();
-				return;
-			}
-			else
-				return;
-		}
-	}
-	
-	if (evt.shiftKey)
-	{
-	 	//alert("shift");
-	 	
-		if(moveGraph)
-		{
-			mgx += (csrx - startx); mgy += (csry - starty);
-			draw();
-			return;
-		}
-		else
-		{
-			startx = csrx;
-			starty = csry;
-			moveGraph = true;	
-		}	
-	}
-	
-	else	
-	{
-		moveGraph = false;
-		resetColors();
-		expandThisNode = findNode(csrx, csry);
-	
-		if(expandThisNode > -1)
-		{
-			createNewNode(expandThisNode);
-			iter=0;
-			loopAnimate();
-		}
-	}
-}
-*/
-

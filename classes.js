@@ -1,5 +1,6 @@
-function Node (point, velocity, parent, angle) 
+function Node (id, point, velocity, parent, angle) 
 {
+	this.number = id;
 	this.location = point; 
 	this.velocity = velocity; 
 	this.parentNode = parent;	
@@ -20,14 +21,16 @@ function Node (point, velocity, parent, angle)
 		var list='';
 		for(var i=0; i< this.mylinks.length;i++)
 			list += i+': ' + this.mylinks[i] + ' ';
-		//console.log(list);	
+	return list;	
 	}
 
 
 	this.toString = () =>
 	{
-		return 'location: ' + this.location.x + ', ' +  this.location.y +
-		  	', velocity: ' + this.velocity.toString()  + 'links: ' + this.linksList();
+		console.log(  'id: ' + this.number +
+					  ' Loc: ' + this.location.toString() + 
+		  			   this.velocity.toString()  + 
+					  ' links: ' + this.linksList());
 	};
 }
 
@@ -53,8 +56,8 @@ function Point(x, y)
 		this.x += (this.x - node.location.x);
 		this.y += (this.y - node.location.y);
 	};
-	this.consolePosition = (name) => {
-		console.log( name + ' X: ' + this.x + ', Y: ' + this.y) ;
+	this.toString = () => {
+		return (' X: ' +  Number.parseFloat(this.x).toFixed(2) + ', Y: ' +  Number.parseFloat(this.y).toFixed(2)) ;
  	};
 
 }
@@ -71,11 +74,10 @@ function Vector (m, d)
 	
 	};
 	
-	this.toString =   (type) => {
-	  	console.log( type +  '-  Magnitude: ' + this.magnitude + ', direction: ' + this.direction ) ;
+	this.toString =   ( ) => {
+	  return ( ' Mag: ' + Number.parseFloat(this.magnitude).toFixed(2) + ', Ang: ' + Number.parseFloat(this.direction).toFixed(2) ) ;
 	};
 }
-
 
 function randomXToY(minVal,maxVal,floatVal)
 {
@@ -83,7 +85,6 @@ function randomXToY(minVal,maxVal,floatVal)
  	var randVal = minVal+(Math.random()*(maxVal-minVal));
   	return typeof floatVal=='undefined'?Math.round(randVal):randVal.toFixed(floatVal);
 }
-
 
 function createMultiArray(rows, cols)
 {

@@ -1,17 +1,13 @@
 var nodeCount = 0;
 var nodes = [];
 
-var MaxIterations = 1000;
-var displayRate = 100 ;
+var MaxIterations = 4500;
+var displayRate = 50 ;
 
-var repulsion_constant = 3000;
-var attraction_constant =200;
 
-var springLength = 500 ;
 var dampening_constant = .1;
 
-var weakAttraction_constant = .01;
-var weakSpringLength = 250 ;
+ 
  
 var iter=0;
 var gravity = {}, replusion ={}, dampeningConst = {}, attraction = {}, display = {}, spring ={}; 
@@ -30,11 +26,9 @@ function loopAnimate()
  		return;
   	
   	iter++;
-  	
-	if(iter % displayRate  == 0)
-	{
-		draw();
-	}
+	if(iter % displayRate == 0)
+ 	draw();
+ 
   //turnOnGravity(grav)
 	reposition();
 
@@ -52,7 +46,9 @@ function init()
 	window.addEventListener("keydown", keyDown, false);
 	window.addEventListener("keyup", keyUp, false);
 
-	createStartNode();
+	 createStartNode();
+
+	//createNetwork();
 }
 
 
