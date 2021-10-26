@@ -21,7 +21,7 @@ input[type=range]  {
 
 fieldset
 {
-	width: 30%; float: left;
+	width: 10%; float: left;
 }
 
 </style>
@@ -30,38 +30,26 @@ fieldset
 <body onload="main();">
 	<canvas id="canvas" width="1500" height="800"></canvas>
 
-	<button onclick="turnOnGravity(1);">Turn on Gravity</button>
-	<button onclick="randomisePositions(); ">Boom!</button>
-	<fieldset>
-	<legend>Gravity</legend>
-	<input  min="0" value="0.001" max=".005" step="0.0001" type="range"  oninput="gravity.alter(this)"></input>
-	</fieldset>
+ 
+ 
 
 	<fieldset>
 	<legend>Replusion</legend>
-	<input  min="1" value="30000" max="50000" step="100" type="range"  oninput="replusion.alter(this)"></input>
-
+	<input  min="1" value="500" max="2000" step="25" type="range"  oninput="replusion.alter(this)"></input>
 	</fieldset>
-	<fieldset>
-	<legend>Dampening</legend>	
-	<input  min="0" value="0.08" max=".1" step="0.001" type="range"  oninput="dampeningConst.alter(this)"></input>
-
-	</fieldset>
+ 
 	<fieldset>
 	<legend>Attraction</legend>
-	<input  min="0"  value="10" max="50" step="1" type="range" oninput="attraction.alter(this)"></input>
-
+	<input  min="0.001"  value=".1" max=".3" step=".05" type="range" oninput="attraction.alter(this)"></input>
 	</fieldset>
+ 
 
 	<fieldset>
-	<legend>Display</legend>	<input  min="0"value="200"  max="1000" step="1" type="range"  oninput="display.alter(this)"></input>
+	<legend>Spring Length</legend>
+	<input  min="0" value="50" max="100" step="5" type="range"   oninput="spring.alter(this)"></input> 
 	</fieldset>
 
-	<fieldset>
-	<legend> Spring </legend>
-	<input  min="0" value="5000" max="15500" step="500" type="range"   oninput="spring.alter(this)"></input> 
-	</fieldset>
-
+	<button onclick="randomisePositions(); ">Boom!</button>
 
 </body>
 </html>

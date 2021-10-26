@@ -1,26 +1,37 @@
-function Node (id, point, velocity, parent, angle) 
+function Node (id, point, velocity, parent) 
 {
 	this.number = id;
 	this.location = point; 
 	this.velocity = velocity; 
-	this.parentNode = parent;	
-
-	this.angleToParent = angle; //	(should be angle to child!)
-	this.mylinks = [];
+	this.parentNode = parent;	 
+	this.childNodes = [];
 	this.color = "red";
 	
-
-	this.newPosition = (point) =>
+	this.newPosition = (vector) =>
 	{
-		this.location.x += point.x;
-		this.location.y += point.y;
+		this.location.x += vector.i;
+		this.location.y += vector.j;
 	}
 
-	this.linksList = () => 
+	this.sumVectors = (vector, type) =>
+	{
+		if(type=="add")
+		{
+			this.velocity.i += vector.i;
+			this.velocity.j += vector.j;
+		}
+		else
+		{
+			this.velocity.i -= vector.i;
+			this.velocity.j -= vector.j;
+		}
+	}
+
+	this.childNodesList = () => 
 	{
 		var list='';
-		for(var i=0; i< this.mylinks.length;i++)
-			list += i+': ' + this.mylinks[i] + ' ';
+		for(var i=0; i< this.childNodes.length;i++)
+			list += i+': ' + this.childNodes[i] + ' ';
 	return list;	
 	}
 
@@ -30,7 +41,7 @@ function Node (id, point, velocity, parent, angle)
 		console.log(  'id: ' + this.number +
 					  ' Loc: ' + this.location.toString() + 
 		  			   this.velocity.toString()  + 
-					  ' links: ' + this.linksList());
+					  ' childs: ' + this.linksList());
 	};
 }
 
@@ -43,45 +54,38 @@ function Point(x, y)
 	{
 		this.x = x;
 		this.y = y;
-
 	}
-	this.alter = (node) =>
+	
+	this.alterPosition = (node) =>
 	{ 
 		this.x += node.location.x;
 		this.y += node.location.y;
 	};
 
-	this.move = (node) =>
-	{ 
-		this.x += (this.x - node.location.x);
-		this.y += (this.y - node.location.y);
-	};
 	this.toString = () => {
 		return (' X: ' +  Number.parseFloat(this.x).toFixed(2) + ', Y: ' +  Number.parseFloat(this.y).toFixed(2)) ;
  	};
 
 }
 
-function Vector (m, d)
+function Vector (i, j)
 {
-	this.magnitude = m;
-	this.direction = d;   // degrees
+	this.i = i;
+	this.j = j;
 
 	this.reset = function ()
 	{
-		this.magnitude = 0;
-		this.direction = 0;   // degrees
-	
+		this.i = 0;
+		this.j = 0;   // degrees
 	};
 	
-	this.toString =   ( ) => {
-	  return ( ' Mag: ' + Number.parseFloat(this.magnitude).toFixed(2) + ', Ang: ' + Number.parseFloat(this.direction).toFixed(2) ) ;
+	this.toString = () => {
+	  return ( ' I: ' + Number.parseFloat(this.i).toFixed(2) + ', J: ' + Number.parseFloat(this.j).toFixed(2) ) ;
 	};
 }
 
-function randomXToY(minVal,maxVal,floatVal)
+function randomMinMax(minVal,maxVal,floatVal)
 {
-
  	var randVal = minVal+(Math.random()*(maxVal-minVal));
   	return typeof floatVal=='undefined'?Math.round(randVal):randVal.toFixed(floatVal);
 }

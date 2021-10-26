@@ -1,18 +1,9 @@
-var nodeCount = 0;
-var nodes = [];
-
-var MaxIterations = 4500;
-var displayRate = 50 ;
-
-
-var dampening_constant = .1;
-
- 
- 
-var iter=0;
-var gravity = {}, replusion ={}, dampeningConst = {}, attraction = {}, display = {}, spring ={}; 
-var grav = 0.0001;
+var nodeCount = 0, nodes = [], iter = 0;
+var replusion = {},  attraction = {}, spring = {}; 
 var stopAnimation;
+
+var MaxIterations = 750;
+var displayRate = 25;
 
 function main()
 {
@@ -22,20 +13,15 @@ function main()
 
 function loopAnimate()
 {
- 	if(iter>MaxIterations)
+ 	if(iter > MaxIterations)
  		return;
   	
   	iter++;
 	if(iter % displayRate == 0)
  	draw();
- 
-  //turnOnGravity(grav)
 	reposition();
-
 	stopAnimation = requestAnimationFrame(loopAnimate);
 }
-
-
 
 function init()
 {
@@ -45,19 +31,10 @@ function init()
 	canvas.addEventListener("mouseup", stopMovingNode, false);
 	window.addEventListener("keydown", keyDown, false);
 	window.addEventListener("keyup", keyUp, false);
+  //createStartNode();
 
-	 createStartNode();
-
-	//createNetwork();
+	 createNetwork();
 }
-
-
-
-display.alter = function(element)
-{
-	displayRate = element.value;
-	console.log("rate: "+displayRate);
-};
 
 replusion.alter = function(element)
 {
@@ -65,24 +42,11 @@ replusion.alter = function(element)
 	console.log("repel: "+repulsion_constant);
 };
 	
-gravity.alter = function(element)
-{
-	grav = element.value;
-	console.log("grav: " + grav); 
-};
-
 spring.alter = function(element)
 {
 	springLength = element.value;
 	console.log("spring: "+springLength);
 };
-
-dampeningConst.alter = function(element)
-{
-	dampening_constant = element.value;
-	console.log("damp: " + dampening_constant);
-};
-
 
 attraction.alter = function(element)
 {

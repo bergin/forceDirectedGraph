@@ -1,21 +1,10 @@
-var width =  1500; //window.width;
-var height = 800;//window.height;
-var connectThisNode=-1;
-var moveGraph = false;
- 
-var startx =0, starty = 0;
-var screenCentreX = width / 2;
-var screenCentreY = height /2;
-var x2, y2;
-var dotSize = 10;
-var scaling =1;
-var firstNode =-1; 
-var moving = false, myNode, jointNode; 
-
 var canvas;
+var width =  1500, height = 800;//window.height;
+var screenCentreX = width / 2, screenCentreY = height /2;
+var dotSize = 10, scaling = 1; 
+var moving = false, myNode, jointNode; 
+var joiningList = [], joining = false;
 
-var joiningList = [];
-var joining = false;
 // look for a node based on where the user clicked, using event & pageX / pageY
 
 function stop()
@@ -25,19 +14,14 @@ function stop()
 
 function keyDown(event)
 {
-	// console.log(event.code);
-
 	if(event.code=="MetaLeft")
 		joining = true; 
 }
 
 function keyUp(event)
 {
-	// console.log(event.code);
-
 	if(event.code=="MetaLeft")
 		joining = false; 
-
 }
 
 function clickChildNode(evt)
@@ -66,18 +50,15 @@ function clickChildNode(evt)
 		if(myNode > -1)
 		{
 			createChildNode(myNode);
-			draw();
 			iter=0;
-			//loopAnimate();
+			return;
 		}
 	}	
 
 	else 
 		if(myNode > -1)
 			moving = true;
- 
 }	
-
 
 function moveNode(event)
 { 
@@ -103,13 +84,12 @@ function stopMovingNode(event)
  
 function findNode(csrx, csry)
 {
-	var nodeScreenPosition;
-	var clickPosition = new Point(csrx, csry);
+	let nodeScreenPosition, clickPosition = new Point(csrx, csry), sx, sy;
 	 
 	for(var n=0; n<nodeCount; n++)
 	{
-		sx = nodes[n].location.x  * scaling + screenCentreX;			// position of node on the screen
-		sy = nodes[n].location.y  * scaling + screenCentreY;
+		sx = nodes[n].location.x * scaling + screenCentreX;			// position of node on the screen
+		sy = nodes[n].location.y * scaling + screenCentreY;
 		nodeScreenPosition = new Point(sx, sy);
 										 
 		if(distance(nodeScreenPosition, clickPosition) <= dotSize)
@@ -128,18 +108,19 @@ function square(ctx, x, y, color )
 function dot(ctx, x, y, color, size) 
 {
 	ctx.beginPath();
-	ctx.arc(x,  y, size, 0, Math.PI*2);
+	ctx.arc(x, y, size, 0, Math.PI*2);
 	ctx.fillStyle= color; 
+	ctx.lineWidth = 2;
 	ctx.strokeStyle = 'white';
 	ctx.closePath();
 	ctx.fill();
 	ctx.stroke();
 }
 
-function drawLine(ctx, x, y, x1, y1)
+function drawLine(ctx, x, y, x1, y1, color, thickness)
 {
-	ctx.lineWidth = 2;
-	ctx.strokeStyle = 'white';
+	ctx.lineWidth = thickness;
+	ctx.strokeStyle = color;
 	ctx.beginPath();
 	ctx.moveTo(x,y);
 	ctx.lineTo(x1,y1);
@@ -147,11 +128,10 @@ function drawLine(ctx, x, y, x1, y1)
 	ctx.stroke();
 }
 
-
 function draw() 
 { 
 	canvas = document.getElementById("canvas");
- 
+	let sx, sy, x2, y2;
 	if (canvas.getContext) 
 	{
 		let ctx = canvas.getContext("2d");
@@ -162,12 +142,11 @@ function draw()
 			sx = (nodes[n].location.x) * scaling + screenCentreX;
 			sy = (nodes[n].location.y) * scaling + screenCentreY;
 
-			for(let i=0; i< nodes[n].mylinks.length;i++) 
+			for(let i=0; i < nodes[n].childNodes.length; i++) 
 			{
-				x2 = nodes[nodes[n].mylinks[i]].location.x  * scaling + screenCentreX;
-				y2 = nodes[nodes[n].mylinks[i]].location.y  * scaling + screenCentreY;
-
-				drawLine(ctx, sx, sy, x2, y2);
+				x2 = nodes[nodes[n].childNodes[i]].location.x * scaling + screenCentreX;
+				y2 = nodes[nodes[n].childNodes[i]].location.y * scaling + screenCentreY;
+				drawLine(ctx, sx, sy, x2, y2, "grey", 3);
 			}
 		}
 
@@ -175,7 +154,7 @@ function draw()
 		{
 			sx = (nodes[n].location.x) * scaling + screenCentreX;
 			sy = (nodes[n].location.y) * scaling + screenCentreY;
-			dot(ctx, sx, sy, nodes[n].color, 5+ nodes[n].mylinks.length);	 
+			dot(ctx, sx, sy, nodes[n].color, 5+ nodes[n].childNodes.length);	 
 		}
 	}
 }
