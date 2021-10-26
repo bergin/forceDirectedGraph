@@ -1,10 +1,15 @@
-function Node (id, point, velocity, parent) 
+function Edge (source, target)
+{
+	this.source = source;
+	this.target = target;
+}
+
+function Node (id, point, velocity) 
 {
 	this.number = id;
 	this.location = point; 
 	this.velocity = velocity; 
-	this.parentNode = parent;	 
-	this.childNodes = [];
+ 
 	this.color = "red";
 	
 	this.newPosition = (vector) =>
@@ -27,21 +32,14 @@ function Node (id, point, velocity, parent)
 		}
 	}
 
-	this.childNodesList = () => 
-	{
-		var list='';
-		for(var i=0; i< this.childNodes.length;i++)
-			list += i+': ' + this.childNodes[i] + ' ';
-	return list;	
-	}
+ 
 
 
 	this.toString = () =>
 	{
 		console.log(  'id: ' + this.number +
 					  ' Loc: ' + this.location.toString() + 
-		  			   this.velocity.toString()  + 
-					  ' childs: ' + this.linksList());
+		  			   this.velocity.toString() );
 	};
 }
 
@@ -78,7 +76,7 @@ function Vector (i, j)
 		this.i = 0;
 		this.j = 0;   // degrees
 	};
-	
+
 	this.toString = () => {
 	  return ( ' I: ' + Number.parseFloat(this.i).toFixed(2) + ', J: ' + Number.parseFloat(this.j).toFixed(2) ) ;
 	};

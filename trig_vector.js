@@ -6,7 +6,7 @@ function reposition()
 {
 	let repellingForce, attractingForce;
 
-	for(let a=0; a < nodeCount; a++)
+	for(let a=0; a < nodes.length; a++)
 	{
 		for(let b=a+1; b < nodeCount; b++) 
 		{
@@ -14,16 +14,18 @@ function reposition()
 			nodes[a].sumVectors(repellingForce, "add");
 			nodes[b].sumVectors(repellingForce, "minus");
 		}
- 
-		if(a>0)
-		{
-			attractingForce = attractionForce (nodes[a], nodes[nodes[a].parentNode]);
-		 	nodes[a].sumVectors(attractingForce, "add");
-			nodes[nodes[a].parentNode].sumVectors(attractingForce, "minus");
-		}
 	}
 
-	for(let a=0; a < nodeCount; a++) 
+	for(let a=0; a < edges.length; a++)
+	{
+		let s = edges[a].source, t = edges[a].target;
+		attractingForce = attractionForce(nodes[s], nodes[t]);
+		nodes[s].sumVectors(attractingForce, "add");
+		nodes[t].sumVectors(attractingForce, "minus");
+	}
+
+
+	for(let a=0; a < nodes.length; a++) 
 	{
 		nodes[a].newPosition(nodes[a].velocity); 
 		nodes[a].velocity.reset();

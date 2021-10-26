@@ -86,7 +86,7 @@ function findNode(csrx, csry)
 {
 	let nodeScreenPosition, clickPosition = new Point(csrx, csry), sx, sy;
 	 
-	for(var n=0; n<nodeCount; n++)
+	for(var n=0; n<nodes.length; n++)
 	{
 		sx = nodes[n].location.x * scaling + screenCentreX;			// position of node on the screen
 		sy = nodes[n].location.y * scaling + screenCentreY;
@@ -105,8 +105,9 @@ function square(ctx, x, y, color )
 	ctx.fillRect(x, y, dotSize, dotSize);
 }
 
-function dot(ctx, x, y, color, size) 
+function dot(ctx, x, y, color) 
 {
+	let size = 6;
 	ctx.beginPath();
 	ctx.arc(x, y, size, 0, Math.PI*2);
 	ctx.fillStyle= color; 
@@ -131,30 +132,29 @@ function drawLine(ctx, x, y, x1, y1, color, thickness)
 function draw() 
 { 
 	canvas = document.getElementById("canvas");
-	let sx, sy, x2, y2;
+	let sx, sy, s, t, tx, ty;
 	if (canvas.getContext) 
 	{
 		let ctx = canvas.getContext("2d");
   		ctx.clearRect(0, 0, width, height);
 
-		for(let n=0; n < nodeCount; n++){
+		for(let n=0; n < edges.length; n++)
+		{
+			s = edges[n].source, t = edges[n].target;
+			sx = (nodes[s].location.x) * scaling + screenCentreX;
+			sy = (nodes[s].location.y) * scaling + screenCentreY;
 
-			sx = (nodes[n].location.x) * scaling + screenCentreX;
-			sy = (nodes[n].location.y) * scaling + screenCentreY;
-
-			for(let i=0; i < nodes[n].childNodes.length; i++) 
-			{
-				x2 = nodes[nodes[n].childNodes[i]].location.x * scaling + screenCentreX;
-				y2 = nodes[nodes[n].childNodes[i]].location.y * scaling + screenCentreY;
-				drawLine(ctx, sx, sy, x2, y2, "grey", 3);
-			}
+			tx = (nodes[t].location.x) * scaling + screenCentreX;
+			ty = (nodes[t].location.y) * scaling + screenCentreY;
+			 
+			drawLine(ctx, sx, sy, tx, ty, "grey", 3);
 		}
 
-		for(let n=0; n < nodeCount; n++)
+		for(let n=0; n < nodes.length; n++)
 		{
 			sx = (nodes[n].location.x) * scaling + screenCentreX;
 			sy = (nodes[n].location.y) * scaling + screenCentreY;
-			dot(ctx, sx, sy, nodes[n].color, 5+ nodes[n].childNodes.length);	 
+			dot(ctx, sx, sy, nodes[n].color);	 
 		}
 	}
 }
