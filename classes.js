@@ -1,10 +1,15 @@
-function Node (id, point, velocity, parent) 
+function Edge (source, target)
+{
+	this.source = source;
+	this.target = target; 
+}
+
+function Node (id, point, velocity) 
 {
 	this.number = id;
 	this.location = point; 
 	this.velocity = velocity; 
-	this.parentNode = parent;	 
-	this.childNodes = [];
+	this.hidden = false;
 	this.color = "red";
 	
 	this.newPosition = (vector) =>
@@ -27,21 +32,11 @@ function Node (id, point, velocity, parent)
 		}
 	}
 
-	this.childNodesList = () => 
-	{
-		var list='';
-		for(var i=0; i< this.childNodes.length;i++)
-			list += i+': ' + this.childNodes[i] + ' ';
-	return list;	
-	}
-
-
 	this.toString = () =>
 	{
 		console.log(  'id: ' + this.number +
 					  ' Loc: ' + this.location.toString() + 
-		  			   this.velocity.toString()  + 
-					  ' childs: ' + this.linksList());
+		  			   this.velocity.toString() );
 	};
 }
 
@@ -65,7 +60,6 @@ function Point(x, y)
 	this.toString = () => {
 		return (' X: ' +  Number.parseFloat(this.x).toFixed(2) + ', Y: ' +  Number.parseFloat(this.y).toFixed(2)) ;
  	};
-
 }
 
 function Vector (i, j)
@@ -78,7 +72,7 @@ function Vector (i, j)
 		this.i = 0;
 		this.j = 0;   // degrees
 	};
-	
+
 	this.toString = () => {
 	  return ( ' I: ' + Number.parseFloat(this.i).toFixed(2) + ', J: ' + Number.parseFloat(this.j).toFixed(2) ) ;
 	};
@@ -92,9 +86,7 @@ function randomMinMax(minVal,maxVal,floatVal)
 
 function createMultiArray(rows, cols)
 {
-	var i;
-	var j;
-	var a = new Array(rows);
+	let i, j, a = new Array(rows);
 	for (i=0; i < rows; i++)
 	{
 		a[i] = new Array(cols);

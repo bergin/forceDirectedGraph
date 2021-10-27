@@ -1,4 +1,4 @@
-var nodeCount = 0, nodes = [], iter = 0;
+var nodeCount = 0, nodes = [], edges = [], iter = 0;
 var replusion = {},  attraction = {}, spring = {}; 
 var stopAnimation;
 
@@ -7,8 +7,9 @@ var displayRate = 25;
 
 function main()
 {
-	init();
-	loopAnimate();
+	 init();
+	 loopAnimate();
+	 
 }
 
 function loopAnimate()
