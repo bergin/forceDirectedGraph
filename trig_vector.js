@@ -1,6 +1,6 @@
 var repulsion_constant =  500;
 var attraction_constant = 0.1;
-var springLength = 50;
+var springLength = 75;
  
 function reposition()
 {
@@ -8,12 +8,12 @@ function reposition()
 
 	for(let a=0; a < nodes.length; a++)
 	{
-		if(nodes[a].hidden)
+		if(nodes[a].visibility == "false")
 			continue;
 
-		for(let b=a+1; b < nodeCount; b++) 
+		for(let b=a+1; b < nodes.length; b++) 
 		{
-			if(nodes[b].hidden)
+			if(nodes[b].visibility == "false")
 				continue;
 			repellingForce = replusionForce (nodes[a], nodes[b]);	 
 			nodes[a].sumVectors(repellingForce, "add");
@@ -32,13 +32,12 @@ function reposition()
 
 	for(let a=0; a < nodes.length; a++) 
 	{
-		if(nodes[a].hidden)
+		if(nodes[a].visibility == "false")
 			continue;
 		nodes[a].newPosition(nodes[a].velocity); 
 		nodes[a].velocity.reset();
 	}
 }
-
 
 function replusionForce(a, b)
 {

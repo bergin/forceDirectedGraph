@@ -1,6 +1,6 @@
-var nodeCount = 0, nodes = [], edges = [], iter = 0;
+var nodes = [], edges = [], iter = 0;
 var replusion = {},  attraction = {}, spring = {}; 
-var stopAnimation;
+var stopAnimation, textbox;
 
 var MaxIterations = 750;
 var displayRate = 25;
@@ -9,7 +9,6 @@ function main()
 {
 	 init();
 	 loopAnimate();
-	 
 }
 
 function loopAnimate()
@@ -26,15 +25,19 @@ function loopAnimate()
 
 function init()
 {
+
 	canvas = document.getElementById("canvas");
+	textbox = document.getElementById("textbox");
+	textbox.addEventListener("keydown", enterText, false);
+
 	canvas.addEventListener("mousedown", clickChildNode, false);
 	canvas.addEventListener("mousemove", moveNode, false);
 	canvas.addEventListener("mouseup", stopMovingNode, false);
 	window.addEventListener("keydown", keyDown, false);
 	window.addEventListener("keyup", keyUp, false);
-  //createStartNode();
+    createStartNode();
+	//createNetwork();
 
-	 createNetwork();
 }
 
 replusion.alter = function(element)

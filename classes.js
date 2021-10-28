@@ -4,13 +4,16 @@ function Edge (source, target)
 	this.target = target; 
 }
 
-function Node (id, point, velocity) 
+function Node (id, point, velocity, label, visibility) 
 {
 	this.number = id;
 	this.location = point; 
 	this.velocity = velocity; 
-	this.hidden = false;
+	this.visibility = visibility;
 	this.color = "red";
+	this.label = label;
+ 
+
 	
 	this.newPosition = (vector) =>
 	{

@@ -2,7 +2,7 @@ var canvas;
 var width =  1500, height = 800; 
 var screenCentreX = width / 2, screenCentreY = height /2;
 var dotSize = 10, scaling = 1; 
-var moving = false, myNode, deleting = false; 
+var moving = false, myNode, deleting = false, labelling = false; 
 var joiningList = [], joining = false;
 
 // look for a node based on where the user clicked, using event & pageX / pageY
@@ -14,12 +14,15 @@ function stop()
 
 function keyDown(event)
 {
-	//console.log(event.code);
+ 	//console.log(event.code);
 	if(event.code=="MetaLeft")
 		joining = true; 
 
 	if(event.code=="KeyD")
 		deleting = true;	
+
+	if(event.code=="KeyQ")
+		labelling = true;		
 }
 
 function keyUp(event)
@@ -28,35 +31,34 @@ function keyUp(event)
 		joining = false; 
 	if(event.code=="KeyD")
 		deleting = false;	
+	if(event.code=="KeyQ")
+		labelling = false;				
 }
 
-function searchDeleteEdges(u,v)
+function enterText(event)
 {
-	for(a=0;a<edges.length;a++)
+	if(event.code === 'Enter') 
 	{
-		if( (edges[a].source == u && edges[a].target == v) || (edges[a].source == v && edges[a].target == u))
-		{
-			edges.splice(a, 1);
-			console.log("edge " + u + "-" + v +" deleted");
-			return true;
-		}
-	}
-	return false;	
+		let test = parseInt(document.getElementById('textbox').getAttribute("node"));
+		nodes[test].label = document.getElementById('textbox').value;
+ 
+        document.getElementById('textbox').style.visibility = "hidden";  
+		document.getElementById('textbox').value ="";
+		draw();
+    }
 }
 
-function deleteNode(node)
+function labelNode(myNode)
 {
-	// nodes.splice(node, 1);
-	nodes[node].hidden = true;
-	a = edges.length;
-	while (a--)
-	{
-		if( (edges[a].source == node || edges[a].target == node))
-		{
-			console.log("edge: " + edges[a].source + "-" + edges[a].target +" deleted");
-			edges.splice(a, 1);			 
-		}
-	}
+	let input = document.getElementById('textbox'); 
+ 
+	input.setAttribute("node", myNode);
+	input.value = nodes[myNode].label;
+	input.setAttribute("style", "visibility: visible; top: " +  
+	(nodes[myNode].location.y + screenCentreY + 30 ).toFixed(0) + "px; left: " +
+	(nodes[myNode].location.x + screenCentreX + 30).toFixed(0) + "px;"	);
+	console.log("FOCUS");
+	document.getElementById('textbox').focus();
 }
 
 function clickChildNode(evt)
@@ -72,6 +74,13 @@ function clickChildNode(evt)
 	}	
 	
 	console.log("Node is: " + myNode);
+
+	if(labelling)
+	{
+		labelNode(myNode);
+		labelling = false;
+		return;
+	}
 
 	if(deleting)
 	{
@@ -135,7 +144,7 @@ function findNode(csrx, csry)
 	 
 	for(var n=0; n<nodes.length; n++)
 	{
-		if(nodes[n].hidden)
+		if(nodes[n].hidden=="false")
 			continue;
 		sx = nodes[n].location.x * scaling + screenCentreX;			// position of node on the screen
 		sy = nodes[n].location.y * scaling + screenCentreY;
@@ -154,6 +163,15 @@ function square(ctx, x, y, color )
 	ctx.fillRect(x, y, dotSize, dotSize);
 }
 
+function rectangle(ctx, x, y, x1, y1, color)
+{
+	ctx.beginPath();
+	ctx.rect(x,y,x1,y1);	
+	ctx.fillStyle= color; 
+	ctx.fill();
+	ctx.stroke();
+
+}
 function dot(ctx, x, y, color) 
 {
 	let size = 6;
@@ -181,10 +199,11 @@ function drawLine(ctx, x, y, x1, y1, color, thickness)
 function draw() 
 { 
 	canvas = document.getElementById("canvas");
-	let sx, sy, s, t, tx, ty;
+	let sx, sy, s, t, tx, ty, rx, ry,metrics;
 	if (canvas.getContext) 
 	{
 		let ctx = canvas.getContext("2d");
+		ctx.font = "14px Arial";
   		ctx.clearRect(0, 0, width, height);
 
 		for(let n=0; n < edges.length; n++)
@@ -201,20 +220,23 @@ function draw()
 
 		for(let n=0; n < nodes.length; n++)
 		{
-			if(nodes[n].hidden)
+			if(nodes[n].visibility == "false")
 				continue;
 			sx = (nodes[n].location.x) * scaling + screenCentreX;
 			sy = (nodes[n].location.y) * scaling + screenCentreY;
-			dot(ctx, sx, sy, nodes[n].color);	 
+			dot(ctx, sx, sy, nodes[n].color);
+			if(nodes[n].label)
+			{
+				metrics = ctx.measureText(nodes[n].label);
+				rectangle(ctx, sx-30, sy +10, metrics.width+14 , 14 , "white" );
+				ctx.fillStyle = "black";
+				ctx.fillText(nodes[n].label,sx-20, sy +22 );
+
+			}
 		}
 	}
 }
 
-function resetColors()
-{
-	for(var n=0; n<nodeCount; n++)
-		nodes[n].color ="red";
-}
-
+ 
 
  
